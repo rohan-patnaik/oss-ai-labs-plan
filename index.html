@@ -77,7 +77,16 @@ li{margin:5px 0}
 .bars .val{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .bars .hd{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
 footer{color:var(--muted);font-size:13px;margin-top:40px;border-top:1px solid var(--line);padding-top:14px}
-@media (max-width:700px){table{font-size:13px} th,td{padding:6px}}
+body{overflow-x:hidden}
+.card,details{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:700px){
+  table{font-size:13px;min-width:560px} th,td{padding:6px}
+  .bars{grid-template-columns:minmax(120px,160px) 1fr 44px;font-size:12.5px}
+  .bars .lbl{font-size:11.5px}
+  header{padding:10px 14px} header h1{font-size:16px} header nav a{margin-right:8px;font-size:13px}
+  main{padding:16px 12px 60px}
+  .stat .n{font-size:26px}
+}
 </style>
 </head>
 <body>
