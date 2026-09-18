@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OSS → AI Lab Plan · rohan-patnaik</title>
+<style>
+:root{
+  --bg:#f7f7f5; --surface:#ffffff; --text:#1f2328; --muted:#5b6470; --line:#e3e5e8;
+  --accent:#0f6fd6; --accent-soft:#e8f1fc;
+  --ok:#1a7f37; --ok-soft:#e6f4ea; --warn:#9a6700; --warn-soft:#fff6d6; --bad:#c0392b; --bad-soft:#fde8e6;
+  --low:#1a7f37; --med:#9a6700; --high:#7c3aed; --high-soft:#f1e9fe;
+  --code:#f0f1f3;
+}
+[data-theme="dark"]{
+  --bg:#0f1115; --surface:#171a21; --text:#e6e8eb; --muted:#9aa4b2; --line:#2a2f3a;
+  --accent:#6cb0ff; --accent-soft:#16233a;
+  --ok:#4cc38a; --ok-soft:#12271c; --warn:#e3b341; --warn-soft:#2b2410; --bad:#ff7b72; --bad-soft:#331b1b;
+  --low:#4cc38a; --med:#e3b341; --high:#c4a4ff; --high-soft:#251b3a;
+  --code:#1f2430;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1}
+header nav a{margin-right:12px;font-size:14px;color:var(--muted)}
+.toggle{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px}
+main{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
+h2{font-size:24px;margin:40px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+h3{font-size:18px;margin:24px 0 8px}
+p{margin:8px 0}
+.lead{font-size:17px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:10px 0}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.LOW{color:var(--low);background:var(--ok-soft)}
+.MED{color:var(--med);background:var(--warn-soft)}
+.HIGH{color:var(--high);background:var(--high-soft)}
+.ok{color:var(--ok);background:var(--ok-soft)}
+.warn{color:var(--warn);background:var(--warn-soft)}
+.bad{color:var(--bad);background:var(--bad-soft)}
+.info{color:var(--accent);background:var(--accent-soft)}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto;font-size:13.5px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:12px 0;padding:0 18px}
+details[open]{padding-bottom:14px}
+summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:17px;list-style:none;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--muted);transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary .sub{font-weight:400;color:var(--muted);font-size:14px}
+ul{padding-left:22px;margin:6px 0}
+li{margin:5px 0}
+.issue li{list-style:none;margin:8px 0;padding-left:0}
+.issue .tag{margin-right:8px;min-width:52px;text-align:center}
+.repo{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+.note{border-left:3px solid var(--accent);padding:8px 14px;background:var(--accent-soft);border-radius:0 8px 8px 0;margin:12px 0}
+.danger{border-left-color:var(--bad);background:var(--bad-soft)}
+.steps li{margin:8px 0}
+.kbd{font-size:13px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .n{font-size:32px;font-weight:700;line-height:1.1}
+.stat .l{font-size:13px;color:var(--muted);margin-top:4px}
+.bars{display:grid;grid-template-columns:minmax(150px,220px) 1fr 52px;gap:6px 10px;align-items:center;font-size:13.5px}
+.bars .lbl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars .lbl a{color:var(--text)}
+.bars .trk{height:10px;background:var(--code);border-radius:4px;overflow:hidden}
+.bars .fil{height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.bars .val{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.bars .hd{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+footer{color:var(--muted);font-size:13px;margin-top:40px;border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:700px){table{font-size:13px} th,td{padding:6px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>OSS → AI Lab Plan <span class="kbd">· rohan-patnaik · researched 2026-09-18</span></h1>
+  <nav>
+    <a href="#tldr">TL;DR</a><a href="#history">Your history</a><a href="#labs">Labs</a><a href="#portfolio">6 PRs</a><a href="#merge">Merge odds</a><a href="#attack">Order of attack</a><a href="#avoid">Avoid</a>
+  </nav>
+  <button class="toggle" id="themeBtn" aria-label="Toggle theme">🌙 Dark</button>
+</header>
+
+<main>
+
+<p class="lead">Which AI-lab repos actually merge outsider PRs, which ones only look open, and the six PRs to go after first. Numbers are from the GitHub API on 2026-09-18: last ~100 merged PRs per repo, bots excluded. "External share" is an upper bound because many employees hide org membership; corrected figures are shown where the research could tell.</p>
+
+<div class="stats">
+  <div class="stat"><div class="n">20</div><div class="l">labs and lab-adjacent orgs researched</div></div>
+  <div class="stat"><div class="n">23</div><div class="l">repos where outsiders actually get merged</div></div>
+  <div class="stat"><div class="n">110+</div><div class="l">open issues verified free of a linked PR</div></div>
+  <div class="stat"><div class="n">6</div><div class="l">PRs in your first portfolio: 2 low, 2 medium, 2 high</div></div>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">External share of recent merges, tier-1 repos</h3>
+<p class="kbd">Share of the last ~100 merged PRs that came from outside the org, bots excluded. Corrected for hidden staff where the research could identify them. Hover a bar for the raw count.</p>
+<div class="bars">
+  <div class="hd">Repo</div><div class="hd"></div><div class="hd" style="text-align:right">Ext.</div>
+  <div class="lbl"><a href="https://github.com/NVIDIA/NeMo-Agent-Toolkit">NVIDIA/NeMo-Agent-Toolkit</a></div><div class="trk"><div class="fil" style="width:87%" title="26 of 30 genuine externals"></div></div><div class="val">87%</div>
+  <div class="lbl"><a href="https://github.com/All-Hands-AI/OpenHands">All-Hands-AI/OpenHands</a></div><div class="trk"><div class="fil" style="width:79%" title="~79 of 100"></div></div><div class="val">79%</div>
+  <div class="lbl"><a href="https://github.com/anthropics/claude-code-action">anthropics/claude-code-action</a></div><div class="trk"><div class="fil" style="width:72%" title="42 of 58"></div></div><div class="val">72%</div>
+  <div class="lbl"><a href="https://github.com/google/adk-python">google/adk-python</a></div><div class="trk"><div class="fil" style="width:71%" title="~71% after excluding likely staff; Copybara landings"></div></div><div class="val">71%</div>
+  <div class="lbl"><a href="https://github.com/huggingface/peft">huggingface/peft</a></div><div class="trk"><div class="fil" style="width:65%" title="34 of 52"></div></div><div class="val">65%</div>
+  <div class="lbl"><a href="https://github.com/vllm-project/aibrix">vllm-project/aibrix</a></div><div class="trk"><div class="fil" style="width:61%" title="54 of 89"></div></div><div class="val">61%</div>
+  <div class="lbl"><a href="https://github.com/EleutherAI/delphi">EleutherAI/delphi</a></div><div class="trk"><div class="fil" style="width:56%" title="40 of 72"></div></div><div class="val">56%</div>
+  <div class="lbl"><a href="https://github.com/ai-dynamo/dynamo">ai-dynamo/dynamo</a></div><div class="trk"><div class="fil" style="width:55%" title="~55% after excluding NVIDIA staff on forks"></div></div><div class="val">55%</div>
+  <div class="lbl"><a href="https://github.com/modelcontextprotocol/go-sdk">modelcontextprotocol/go-sdk</a></div><div class="trk"><div class="fil" style="width:52%" title="42 of 81, 31 distinct people"></div></div><div class="val">52%</div>
+  <div class="lbl"><a href="https://github.com/pytorch/torchtitan">pytorch/torchtitan</a></div><div class="trk"><div class="fil" style="width:50%" title="~6 of 12 sampled genuine externals"></div></div><div class="val">50%</div>
+  <div class="lbl"><a href="https://github.com/openai/openai-agents-python">openai/openai-agents-python</a></div><div class="trk"><div class="fil" style="width:47%" title="14 of 30"></div></div><div class="val">47%</div>
+  <div class="lbl"><a href="https://github.com/microsoft/markitdown">microsoft/markitdown</a></div><div class="trk"><div class="fil" style="width:46%" title="19 of 41"></div></div><div class="val">46%</div>
+  <div class="lbl"><a href="https://github.com/allenai/open-instruct">allenai/open-instruct</a></div><div class="trk"><div class="fil" style="width:44%" title="22 of 50"></div></div><div class="val">44%</div>
+  <div class="lbl"><a href="https://github.com/microsoft/agent-framework">microsoft/agent-framework</a></div><div class="trk"><div class="fil" style="width:41%" title="~36 of 88 after excluding Microsoft staff"></div></div><div class="val">41%</div>
+  <div class="lbl"><a href="https://github.com/google/adk-go">google/adk-go</a></div><div class="trk"><div class="fil" style="width:40%" title="38 of 94 after excluding mergers"></div></div><div class="val">40%</div>
+  <div class="lbl"><a href="https://github.com/NousResearch/hermes-agent">NousResearch/hermes-agent</a></div><div class="trk"><div class="fil" style="width:40%" title="40 of 100; ~1,000 merges per week"></div></div><div class="val">40%</div>
+  <div class="lbl"><a href="https://github.com/aaif-goose/goose">aaif-goose/goose</a></div><div class="trk"><div class="fil" style="width:33%" title="15 of 46"></div></div><div class="val">33%</div>
+  <div class="lbl"><a href="https://github.com/huggingface/huggingface_hub">huggingface/huggingface_hub</a></div><div class="trk"><div class="fil" style="width:31%" title="20 of 64"></div></div><div class="val">31%</div>
+  <div class="lbl"><a href="https://github.com/anthropics/claude-agent-sdk-python">anthropics/claude-agent-sdk-python</a></div><div class="trk"><div class="fil" style="width:29%" title="14 of 48"></div></div><div class="val">29%</div>
+  <div class="lbl"><a href="https://github.com/unslothai/unsloth-zoo">unslothai/unsloth-zoo</a></div><div class="trk"><div class="fil" style="width:25%" title="21 of 84"></div></div><div class="val">25%</div>
+  <div class="lbl"><a href="https://github.com/QwenLM/qwen-code">QwenLM/qwen-code</a></div><div class="trk"><div class="fil" style="width:16%" title="12 of 75"></div></div><div class="val">16%</div>
+  <div class="lbl"><a href="https://github.com/openai/openai-agents-js">openai/openai-agents-js</a></div><div class="trk"><div class="fil" style="width:15%" title="10 of 67"></div></div><div class="val">15%</div>
+</div>
+<p class="kbd">Not plotted: meta-pytorch/torchft (real externals confirmed, sample too small for a percentage). A high share with a huge backlog (hermes-agent, OpenHands) still means competing for fresh issues; a lower share with a tiny queue (agents-js, unsloth-zoo) can be the easier merge.</p>
+</div>
+
+<!-- ================= TL;DR ================= -->
+<h2 id="tldr">0. TL;DR</h2>
+
+<div class="note"><strong>Most important finding.</strong> Triaged "good first issue" lists are exhausted everywhere: every one checked already has 2 to 15 competing PRs, mostly agent-generated. The pattern behind nearly every recent external merge is: <em>find a bug yourself, file a precise issue, open the small tested PR within the hour.</em> Speed on fresh issues beats waiting for labels.</div>
+
+<h3>Tier 1: realistic merges</h3>
+<div class="card" style="padding:0 8px">
+<table>
+<tr><th>Lab</th><th>Repo</th><th>Lang</th><th>Ext. share</th><th>Median merge</th><th>Gate</th></tr>
+<tr><td>OpenAI</td><td><a class="repo" href="https://github.com/openai/openai-agents-python">openai/openai-agents-python</a></td><td>Py</td><td>14/30</td><td>1 day</td><td>No CLA; read AGENTS.md</td></tr>
+<tr><td>OpenAI</td><td><a class="repo" href="https://github.com/openai/openai-agents-js">openai/openai-agents-js</a></td><td>TS</td><td>10/67</td><td>4 days</td><td>changeset required</td></tr>
+<tr><td>Anthropic (MCP)</td><td><a class="repo" href="https://github.com/modelcontextprotocol/go-sdk">modelcontextprotocol/go-sdk</a></td><td>Go</td><td>42/81</td><td>1–3 days</td><td>comment on issue first</td></tr>
+<tr><td>Anthropic</td><td><a class="repo" href="https://github.com/anthropics/claude-code-action">anthropics/claude-code-action</a></td><td>TS</td><td>42/58</td><td>4–5 days</td><td>none</td></tr>
+<tr><td>Anthropic</td><td><a class="repo" href="https://github.com/anthropics/claude-agent-sdk-python">anthropics/claude-agent-sdk-python</a></td><td>Py</td><td>14/48</td><td>7–12 days</td><td>none</td></tr>
+<tr><td>Google</td><td><a class="repo" href="https://github.com/google/adk-go">google/adk-go</a></td><td>Go</td><td>~40% adj.</td><td>4 days</td><td>Google CLA</td></tr>
+<tr><td>Google</td><td><a class="repo" href="https://github.com/google/adk-python">google/adk-python</a></td><td>Py</td><td>~71% adj.</td><td>8 days</td><td>CLA + Copybara (PR closed, commit lands as yours)</td></tr>
+<tr><td>Meta</td><td><a class="repo" href="https://github.com/pytorch/torchtitan">pytorch/torchtitan</a></td><td>Py</td><td>~50% adj.</td><td>1 day</td><td>Meta CLA</td></tr>
+<tr><td>Meta</td><td><a class="repo" href="https://github.com/meta-pytorch/torchft">meta-pytorch/torchft</a></td><td>Py+Rust</td><td>real externals</td><td>1 day</td><td>Meta CLA</td></tr>
+<tr><td>Microsoft</td><td><a class="repo" href="https://github.com/microsoft/markitdown">microsoft/markitdown</a></td><td>Py</td><td>19/41</td><td>1 day</td><td>MS CLA; scope rules</td></tr>
+<tr><td>Microsoft</td><td><a class="repo" href="https://github.com/microsoft/agent-framework">microsoft/agent-framework</a></td><td>Py</td><td>~41% adj.</td><td>2 days</td><td>pre-discuss big features</td></tr>
+<tr><td>vLLM</td><td><a class="repo" href="https://github.com/vllm-project/aibrix">vllm-project/aibrix</a></td><td>Go</td><td>54/89</td><td>1 day</td><td>none found</td></tr>
+<tr><td>NVIDIA</td><td><a class="repo" href="https://github.com/ai-dynamo/dynamo">ai-dynamo/dynamo</a></td><td>Rust/Py/Go</td><td>~55% adj.</td><td>2 days</td><td>DCO + signed commits</td></tr>
+<tr><td>NVIDIA</td><td><a class="repo" href="https://github.com/NVIDIA/NeMo-Agent-Toolkit">NVIDIA/NeMo-Agent-Toolkit</a></td><td>Py</td><td>26/30 genuine</td><td>2 days</td><td>DCO; comment first</td></tr>
+<tr><td>Hugging Face</td><td><a class="repo" href="https://github.com/huggingface/peft">huggingface/peft</a></td><td>Py</td><td>34/52</td><td>6 days</td><td>claim on issue first</td></tr>
+<tr><td>Hugging Face</td><td><a class="repo" href="https://github.com/huggingface/huggingface_hub">huggingface/huggingface_hub</a></td><td>Py</td><td>20/64</td><td>1 day</td><td>none</td></tr>
+<tr><td>Block (AAIF)</td><td><a class="repo" href="https://github.com/aaif-goose/goose">aaif-goose/goose</a></td><td>Rust+TS</td><td>15/46</td><td>0–9 days</td><td>issue must be "Ready" on board</td></tr>
+<tr><td>Unsloth</td><td><a class="repo" href="https://github.com/unslothai/unsloth-zoo">unslothai/unsloth-zoo</a></td><td>Py</td><td>21/84</td><td>4 days</td><td>none</td></tr>
+<tr><td>Qwen</td><td><a class="repo" href="https://github.com/QwenLM/qwen-code">QwenLM/qwen-code</a></td><td>TS</td><td>12/75</td><td>3 days</td><td>PR must link an issue</td></tr>
+<tr><td>EleutherAI</td><td><a class="repo" href="https://github.com/EleutherAI/delphi">EleutherAI/delphi</a></td><td>Py</td><td>40/72</td><td>1 day</td><td>CLA</td></tr>
+<tr><td>Ai2</td><td><a class="repo" href="https://github.com/allenai/open-instruct">allenai/open-instruct</a></td><td>Py</td><td>22/50</td><td>4 days</td><td>none</td></tr>
+<tr><td>Nous Research</td><td><a class="repo" href="https://github.com/NousResearch/hermes-agent">NousResearch/hermes-agent</a></td><td>Py</td><td>40/100, ~1k merges/wk</td><td>0–12 days</td><td>search 29k open PRs for dupes first</td></tr>
+<tr><td>All Hands AI</td><td><a class="repo" href="https://github.com/All-Hands-AI/OpenHands">All-Hands-AI/OpenHands</a></td><td>Py/TS</td><td>~79/100</td><td>~1 day</td><td><code>ready-for-dev</code> label; first PR wins</td></tr>
+</table>
+</div>
+
+<h3>Closed to external code <span class="tag bad">issues / RCAs only</span></h3>
+<div class="card">
+<ul>
+<li><a href="https://github.com/openai/codex">openai/codex</a>: docs/contributing.md says "We do not accept external code contributions or pull requests." 497 of last 498 merges are the mirror bot.</li>
+<li><a href="https://github.com/xai-org">All of xai-org</a>: grok-build has PRs disabled; x-algorithm merged 1 of 94; xai-sdk-python has had no maintainer reply since June.</li>
+<li>Cognition/Devin (trackers and dormant repos), Reflection AI (forks only), Magic (no public repos), Poolside (binary-only tracker).</li>
+<li><a href="https://github.com/mistralai/mistral-vibe">mistralai/mistral-vibe</a> ("not currently accepting contributions"), <a href="https://github.com/modelcontextprotocol/inspector">MCP inspector</a> ("We accept issues, not pull requests"), <a href="https://github.com/PrimeIntellect-ai/prime-agent">prime-agent</a> (auto-closes unvouched PRs), <a href="https://github.com/microsoft/magentic-ui">magentic-ui</a> (vetted contributors only).</li>
+<li>Every generated SDK: openai-python/node/go, anthropic-sdk-*, together-py, cohere generated files, mistral client-*, llama-api-python, googleapis/*-genai. Hand edits get rejected.</li>
+</ul>
+</div>
+
+<!-- ================= HISTORY ================= -->
+<h2 id="history">1. What your own PR history says</h2>
+<div class="grid">
+<div class="card">
+<h3 style="margin-top:0">Merged externally (8) <span class="tag ok">pattern to repeat</span></h3>
+<ul>
+<li><a href="https://github.com/grafana/k6/pull/6071">k6 #6071</a>, <a href="https://github.com/grafana/k6/pull/6070">k6 #6070</a></li>
+<li><a href="https://github.com/google/go-containerregistry/pull/2316">go-containerregistry #2316</a>, <a href="https://github.com/google/go-containerregistry/pull/2315">#2315</a></li>
+<li><a href="https://github.com/cel-expr/cel-go/pull/1340">cel-go #1340</a></li>
+<li><a href="https://github.com/facebook/docusaurus/pull/12054">docusaurus #12054</a>, <a href="https://github.com/facebook/lexical/pull/8541">lexical #8541</a></li>
+<li><a href="https://github.com/Azure/azure-cli/pull/33429">azure-cli #33429</a></li>
+</ul>
+<p class="kbd">All small (+4 to +149 lines), tied to a concrete bug, CI fixed within a day.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Closed (11) and why <span class="tag bad">never again</span></h3>
+<table>
+<tr><th>Reason</th><th>PRs</th></tr>
+<tr><td>Did not read CONTRIBUTING; 3 PRs same day</td><td><a href="https://github.com/google/osv-scanner/pull/2878">osv-scanner #2878</a>, #2879, #2880</td></tr>
+<tr><td>Hand-edited a generated file</td><td><a href="https://github.com/microsoft/playwright-python/pull/3085">playwright-python #3085</a></td></tr>
+<tr><td>Change never run (agent-written)</td><td><a href="https://github.com/microsoft/playwright/pull/40994">playwright #40994</a></td></tr>
+<tr><td>Design change with no prior discussion</td><td><a href="https://github.com/microsoft/playwright-python/pull/3100">playwright-python #3100</a>, <a href="https://github.com/facebook/docusaurus/pull/12053">docusaurus #12053</a>, <a href="https://github.com/Azure/azure-cli/pull/33483">azure-cli #33483</a></td></tr>
+<tr><td>Superseded while CI was red</td><td><a href="https://github.com/microsoft/playwright-python/pull/3099">playwright-python #3099</a></td></tr>
+<tr><td>Duplicate of existing PR</td><td><a href="https://github.com/microsoft/playwright/pull/40999">playwright #40999</a>, #40993</td></tr>
+</table>
+</div>
+</div>
+<div class="note">Open and stale (8): botocore ×3, azure-cli, powertools ×2, <a href="https://github.com/grafana/k6/pull/6072">k6 #6072</a> (approved, waiting on a second review: nudge once), <a href="https://github.com/cel-expr/cel-go/pull/1341">cel-go #1341</a> (maintainer paused). Leave the rest. Note that several target repos now carry "AI slop" labels (transformers, accelerate, keras, ShinkaEvolve, goose), so new PRs must read as hand-verified engineering.</div>
+
+<!-- ================= LABS ================= -->
+<h2 id="labs">2. Lab by lab</h2>
+<p class="kbd">Buckets: <span class="tag LOW">LOW</span> docs / test / one-line fix · <span class="tag MED">MED</span> logic bug or small feature · <span class="tag HIGH">HIGH</span> meaningful feature, needs a design nod first. All issues were unassigned with no linked PR at research time unless noted. Re-check before starting.</p>
+
+<details open>
+<summary>OpenAI <span class="sub">codex closed · Agents SDKs open, seratch merges externals in ~1 day</span></summary>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/openai/openai-agents-python">openai-agents-python</a></td><td>29.5k</td><td>Py</td><td>14/30</td><td>59</td><td>read AGENTS.md, <code>make sync</code>; docs for unreleased behaviour in separate PR</td></tr>
+<tr><td><a href="https://github.com/openai/openai-agents-js">openai-agents-js</a></td><td>3.8k</td><td>TS</td><td>10/67</td><td>18</td><td><code>pnpm changeset</code> required for any packages/ change</td></tr>
+<tr><td><a href="https://github.com/openai/codex-security">codex-security</a></td><td>10.8k</td><td>TS/Py</td><td>9/51</td><td>156</td><td>never touch <code>sdk/typescript/_bundled_plugin/</code> (generated)</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/openai/openai-agents-python/issues/4864">agents-python #4864</a> clearing a compaction session retains the previous response chain</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/openai/openai-agents-python/issues/2393">agents-python #2393</a> trace_include_sensitive_data default change (discuss first)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/openai/openai-agents-python/issues/5085">agents-python #5085</a> Agent.as_tool() nested runs never hit prompt cache (fresh, not timeline-verified)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/openai/openai-agents-js/issues/1941">agents-js #1941</a> per-subagent model / reasoning effort for hosted multi-agent roots</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/openai/openai-agents-js/issues/645">agents-js #645</a> add function-call items via updateHistory in realtime</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/openai/codex-security/issues/251">codex-security #251</a> run warnings never reach SARIF projection (p1)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/openai/codex-security/issues/276">codex-security #276</a> deep scan fails terminally when discovery triggers cyber-safety (p1)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/openai/codex-security/issues/25">codex-security #25</a> show scan scope / budget before paid work begins</li>
+</ul>
+<p class="kbd">Avoid: codex, openai-go, openai-node, symphony, simple-evals, whisper / tiktoken / evals / gpt-oss (1–4 year PR queues), openai-cookbook ("no guarantees").</p>
+</details>
+
+<details open>
+<summary>Anthropic + Model Context Protocol <span class="sub">no CLA · SDKs are Stainless · MCP go-sdk is the fastest door</span></summary>
+<p>Anthropic SDKs are generated ("open an issue" for docs). <a href="https://github.com/anthropics/claude-code">claude-code</a> has no CONTRIBUTING and only <code>mods/</code> is source. MCP: spec changes need a SEP; python-sdk auto-closes PRs unless a maintainer assigned you the issue; inspector is issues-only; servers does not accept new servers; AI-assistance disclosure is required.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/modelcontextprotocol/go-sdk">modelcontextprotocol/go-sdk</a></td><td>5.1k</td><td>Go</td><td>42/81 (31 people)</td><td>51</td><td>comment and wait for ack; API changes need a <code>proposal</code> issue</td></tr>
+<tr><td><a href="https://github.com/anthropics/claude-code-action">anthropics/claude-code-action</a></td><td>8.9k</td><td>TS/Bun</td><td>42/58</td><td>≥100</td><td>merger ashwin-ant; 793 triaged issues but heavily swarmed</td></tr>
+<tr><td><a href="https://github.com/anthropics/claude-agent-sdk-python">anthropics/claude-agent-sdk-python</a></td><td>8.1k</td><td>Py</td><td>14/48</td><td>≥100</td><td>no gating; AI review bot</td></tr>
+</table>
+<p class="kbd">Alternates: <a href="https://github.com/modelcontextprotocol/rust-sdk">rust-sdk</a> (17/74, merger DaleSeo), <a href="https://github.com/modelcontextprotocol/servers">servers</a> for a reference-server fix (26/30 but 1–5 month batches), <a href="https://github.com/modelcontextprotocol/modelcontextprotocol">spec repo</a> docs fixes (0–9 days).</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1250">go-sdk #1250</a> x-mcp-header in unreachable schema position silently accepted</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1235">go-sdk #1235</a> response still written after notifications/cancelled</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1188">go-sdk #1188</a> dual-era servers serve modern Tool schemas to legacy clients</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1262">go-sdk #1262</a> SSE response keeps http.Server.WriteTimeout armed</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1263">go-sdk #1263</a> server cannot send notifications/cancelled when tearing down subscriptions/listen</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/anthropics/claude-code-action/issues/1825">claude-code-action #1825</a> job hangs 20–25 min after Task-delegated subagent completes (p2)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/anthropics/claude-code-action/issues/1749">claude-code-action #1749</a> false "verified" claims loop (prompt-level, p3)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/316">agent-sdk-python #316</a> PreToolUse hooks not called for Read when file missing</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/952">agent-sdk-python #952</a> inbound TRACEPARENT dropped on 2nd+ query()</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/434">agent-sdk-python #434</a> memory spike spawning helper processes</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/425">agent-sdk-python #425</a> SDK MCP tools fail under background subagents (queue backpressure)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/1254">agent-sdk-python #1254</a> release blocked by PyPI pre-flight quota (CI; ask first)</li>
+</ul>
+<p class="kbd">Avoid: inspector, python-sdk (unless assigned), anthropic-sdk-*, claude-code, claude-agent-sdk-typescript (0/15 external), skills, claude-plugins-official, sandbox-runtime, registry seed.json PRs, anthropic-experimental.</p>
+</details>
+
+<details>
+<summary>Google DeepMind / Gemini <span class="sub">Google CLA · Copybara on adk-python · ADK Go merges directly</span></summary>
+<p>googleapis/*-genai are generated ("will accept contributions in the future"). gemini-cli auto-closes PRs not linked to a maintainer-approved issue and its recent "external" merges are largely vendor accounts (~6% truly external). keras bans blind LLM patches.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/google/adk-go">google/adk-go</a></td><td>8.8k</td><td>Go</td><td>~40% adj.</td><td>134</td><td>direct merges; gfi/help-wanted used; 40 open bugs</td></tr>
+<tr><td><a href="https://github.com/google/adk-python">google/adk-python</a></td><td>21.6k</td><td>Py</td><td>~71% adj. (~2 landings/day)</td><td>239</td><td>Copybara; issue assignees are triagers, not implementers</td></tr>
+<tr><td><a href="https://github.com/keras-team/keras">keras-team/keras</a></td><td>64.3k</td><td>Py</td><td>32–36%</td><td>76</td><td><code>stat:contributions welcome</code> label; CLA check on PR</td></tr>
+</table>
+<p class="kbd">Alternate: <a href="https://github.com/google-deepmind/optax">optax</a> unclaimed optimizer asks: <a href="https://github.com/google-deepmind/optax/issues/1770">#1770</a> NEAT, <a href="https://github.com/google-deepmind/optax/issues/1660">#1660</a> GramMuon, <a href="https://github.com/google-deepmind/optax/issues/1658">#1658</a> SSBroyden, <a href="https://github.com/google-deepmind/optax/issues/1603">#1603</a> Adahessian, <a href="https://github.com/google-deepmind/optax/issues/1575">#1575</a> AdaMuon.</p>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/google/adk-go/issues/542">adk-go #542</a> document rate-limit handling</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/google/adk-go/issues/1329">adk-go #1329</a> session/vertexai loses client-assigned Event.ID on round trip</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/google/adk-go/issues/751">adk-go #751</a> AutoCreateSession should create only on NotFound (prior PR #753 closed stale, reusable)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/google/adk-go/issues/1554">adk-go #1554</a> artifact.SaveRequest.Version documented but ignored</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/google/adk-go/issues/1126">adk-go #1126</a> mcptoolset tool-name prefixing across servers (python parity)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/google/adk-go/issues/699">adk-go #699</a> session/database gorm NamingStrategy support</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/google/adk-python/issues/7182">adk-python #7182</a> OIDC auth flow stuck when triggered by subagent (fresh)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/google/adk-python/issues/6833">adk-python #6833</a> backport FunctionTool declaration cache to 1.x</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/google/adk-python/issues/6814">adk-python #6814</a> custom header names for MCP servers with Auth Providers</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/google/adk-python/issues/6472">adk-python #6472</a> lightweight mock executor for deterministic agent testing</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/keras-team/keras/issues/22518">keras #22518</a> EinsumDense wrong symbolic output shape</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/keras-team/keras/issues/23239">keras #23239</a> Mosaic augmentation layer</li>
+</ul>
+<p class="kbd">Avoid: googleapis/*-genai, genai-processors, langextract (37-day median, one maintainer), gemini-cli unless labelled help-wanted for you, jax / flax for a first PR (830 / 291 open PRs).</p>
+</details>
+
+<details>
+<summary>xAI <span class="tag bad">closed</span> <span class="sub">no path to merged code</span></summary>
+<p><a href="https://github.com/xai-org/grok-build/blob/main/CONTRIBUTING.md">grok-build CONTRIBUTING</a>: "does not accept external pull requests or unsolicited patches"; PRs disabled. <a href="https://github.com/xai-org/xai-proto">xai-proto</a>: functional changes not accepted. <a href="https://github.com/xai-org/x-algorithm">x-algorithm</a>: 1 merge out of 94 PRs; all commits are CI dumps. <a href="https://github.com/xai-org/xai-sdk-python">xai-sdk-python</a> has a CLA and invites PRs, but zero maintainer responses since 2026-06-20 and 31 unreviewed external PRs.</p>
+<p>Only paths: xai-sdk-python tiny fixes (<a href="https://github.com/xai-org/xai-sdk-python/issues/213">#213</a>, <a href="https://github.com/xai-org/xai-sdk-python/issues/203">#203</a>, <a href="https://github.com/xai-org/xai-sdk-python/issues/177">#177</a>, mostly already have ignored PRs) or plugin-marketplace JSON entries (zero engineering signal). <strong>Recommendation: skip xAI for code; file high-quality issues if you want a footprint.</strong></p>
+</details>
+
+<details>
+<summary>Cognition / Devin, Cursor, Nous, Reflection, Poolside, Magic <span class="sub">only Nous is genuinely open</span></summary>
+<p><strong>Cognition / Windsurf:</strong> no CONTRIBUTING or CLA anywhere. devin-cli and Exafunction/codeium are issue trackers with no code. windsurf.nvim has not merged since 2025-04. Tiny code repos: <a href="https://github.com/CognitionAI/metabase-mcp-server">metabase-mcp-server</a> (12 months without a merge; <a href="https://github.com/CognitionAI/metabase-mcp-server/issues/33">#33</a> MED, <a href="https://github.com/CognitionAI/metabase-mcp-server/issues/22">#22</a> LOW), <a href="https://github.com/CognitionAI/terraform-provider-devin">terraform-provider-devin</a> (Go, 2 unanswered external PRs). No viable merge path today.</p>
+<p><strong>Cursor / Anysphere:</strong> cursor/cursor is a tracker. <a href="https://github.com/cursor/mixture-of-kittens">mixture-of-kittens</a> is the only repo with a written welcome (DCO) but its 5 external PRs sit unreviewed since August. <a href="https://github.com/cursor/plugins">plugins</a> ~10% external with 88 open PRs. <a href="https://github.com/cursor/cookbook">cookbook</a> is slow.</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/cursor/cookbook/issues/50">cursor/cookbook #50</a> afterMCPExecution return value discarded; postToolUse lacks MCP server name (verified no PR)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/cursor/plugins/issues/385">cursor/plugins #385</a> Gmail create_filter 403 scope (prior PR closed; redo with correct OAuth scope)</li>
+</ul>
+<p><strong>Nous Research:</strong> <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> (246k stars, Python) explicitly welcomes external PRs, priority bug fixes &gt; cross-platform &gt; security &gt; perf &gt; skills &gt; tools &gt; docs; no CLA/DCO; ~1,000 merges per week, 40% external; external merge 0–12 days. Cost: 29,879 open PRs, so <a href="https://github.com/NousResearch/hermes-agent/blob/main/CONTRIBUTING.md">CONTRIBUTING</a> mandates searching open and merged PRs first. New memory providers are refused.</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/NousResearch/hermes-agent/issues/94859">hermes-agent #94859</a> stdio MCP servers fail after gateway restart; paths resolved relative to ~/.hermes</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/NousResearch/hermes-agent/issues/87930">hermes-agent #87930</a> nix build reports wrong version on linux x86_64</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/NousResearch/hermes-agent/issues/91420">hermes-agent #91420</a> .desktop launcher on Fedora GNOME kills user processes (needs-repro)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/NousResearch/hermes-agent/issues/93827">hermes-agent #93827</a> desktop drops model-question options when switching concurrent chats</li>
+</ul>
+<p class="kbd"><strong>Reflection AI:</strong> 9 forks, 2 empty repos. <strong>Magic:</strong> no public repos. <strong>Poolside:</strong> pool is a binary-only tracker. Nothing to merge.</p>
+</details>
+
+<details>
+<summary>DeepSWE / Agentica / Together, Prime Intellect <span class="sub">rllm and prime-rl are live · prime-agent auto-closes outsiders</span></summary>
+<p>agentica-project is dead; live DeepSWE / DeepCoder code is <a href="https://github.com/rllm-org/rllm">rllm-org/rllm</a> (no CLA, PR template needs pre-commit + pytest). together-py/ts are Stainless. <a href="https://github.com/PrimeIntellect-ai/prime-rl">prime-rl</a> README explicitly welcomes PRs. <a href="https://github.com/PrimeIntellect-ai/prime-agent/blob/main/CONTRIBUTING.md">prime-agent</a> auto-closes PRs and issues from unvouched contributors. community-environments has 226 open PRs and 0 merges.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share (corrected)</th><th>Open PRs</th></tr>
+<tr><td><a href="https://github.com/rllm-org/rllm">rllm-org/rllm</a></td><td>5.8k</td><td>Py</td><td>7/57 true external, 0–1 day</td><td>87</td></tr>
+<tr><td><a href="https://github.com/PrimeIntellect-ai/prime-rl">PrimeIntellect-ai/prime-rl</a></td><td>2.1k</td><td>Py</td><td>4/48</td><td>194</td></tr>
+<tr><td><a href="https://github.com/PrimeIntellect-ai/verifiers">PrimeIntellect-ai/verifiers</a></td><td>4.6k</td><td>Py</td><td>7/51, 1 day</td><td>158 (queue since June is a warning)</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/rllm-org/rllm/issues/914">rllm #914</a> R1ToolParser.tool_output_end mismatch with DeepSeek chat template</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/rllm-org/rllm/issues/331">rllm #331</a> multi-turn verl engine abnormal behaviour (needs repro)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/PrimeIntellect-ai/prime-rl/issues/3566">prime-rl #3566</a> solve_rates assumes binary rewards; expose threshold</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/PrimeIntellect-ai/prime-rl/issues/3532">prime-rl #3532</a> hosted eval rollouts ignore enable_thinking=false</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/PrimeIntellect-ai/prime-rl/issues/3530">prime-rl #3530</a> deepswe environment eval fails hosted + local</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/PrimeIntellect-ai/verifiers/issues/2321">verifiers #2321</a> Harbor tasks provisioning services via ENTRYPOINT (design first)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/PrimeIntellect-ai/prime/issues/795">prime #795</a> prime env init still uses verifiers v0 init</li>
+</ul>
+</details>
+
+<details>
+<summary>Meta AI / FAIR / PyTorch <span class="sub">Meta CLA · torchtitan and torchft merge in a day</span></summary>
+<p>monarch and botorch use internal import (PRs never show merged; all sampled were staff). torchtune is sunset. llama-api-python is Stainless. pytorch/pytorch good-first-issues have up to 35 competing PRs.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/pytorch/torchtitan">pytorch/torchtitan</a></td><td>5.7k</td><td>Py</td><td>~6/12 sampled genuine</td><td>512</td><td>merger tianyu-l; 1 day</td></tr>
+<tr><td><a href="https://github.com/meta-pytorch/torchft">meta-pytorch/torchft</a></td><td>540</td><td>Py+Rust</td><td>real externals</td><td>34</td><td>tiny backlog, no swarming</td></tr>
+<tr><td><a href="https://github.com/pytorch/ao">pytorch/ao</a></td><td>3.0k</td><td>Py/Triton</td><td>58/66 raw</td><td>485</td><td>fast but bug queue swarmed</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/pytorch/torchtitan/issues/2899">torchtitan #2899</a> document fault-tolerant (TorchFT) timeouts</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/pytorch/torchtitan/issues/2574">torchtitan #2574</a> check TP degree in parallelize_fn</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/pytorch/torchtitan/issues/3123">torchtitan #3123</a> SimpleFSDP silently ignores enable_fsdp_float8_all_gather</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/pytorch/torchtitan/issues/4532">torchtitan #4532</a> DistMuon split fused gated linear weights before NS</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/meta-pytorch/torchft/issues/295">torchft #295</a> example train_ddp.py breaks</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/meta-pytorch/torchft/issues/323">torchft #323</a> PGTransport timeout ignored by checkpoint send/recv</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/meta-pytorch/torchft/issues/36">torchft #36</a> CheckpointServer streaming transfers (good first issue, 2024)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/pytorch/ao/issues/2367">ao #2367</a> prune slowest ROCm tests (analysis attached)</li>
+</ul>
+<p class="kbd">Alternates: <a href="https://github.com/pytorch/executorch">executorch</a> (59% ext, C++/Arm), <a href="https://github.com/meta-pytorch/torchcodec">torchcodec</a>. Avoid: torchtune, llama-api-python, monarch, botorch, pytorch/pytorch first PR, llama-stack (now OGX).</p>
+</details>
+
+<details>
+<summary>Microsoft AI <span class="sub">MS CLA · markitdown and agent-framework live · autogen frozen</span></summary>
+<p>autogen is in maintenance mode (0 merges in last 100 closed). semantic-kernel superseded by agent-framework. graphrag maintenance / issue-first. magentic-ui vetted only. markitdown scope: converter fidelity fixes, bugs, CLI, markitdown-mcp, tests; new formats "sparingly."</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/microsoft/markitdown">microsoft/markitdown</a></td><td>185k</td><td>Py</td><td>19/41</td><td>362</td><td>single merger afourney; 1 day</td></tr>
+<tr><td><a href="https://github.com/microsoft/agent-framework">microsoft/agent-framework</a></td><td>13.6k</td><td>Py/C#</td><td>~41% adj.</td><td>124</td><td>Python bugs merged in 2 days; confirmed bugs get assigned to staff fast</td></tr>
+<tr><td><a href="https://github.com/data-privacy-stack/presidio">data-privacy-stack/presidio</a></td><td>10.9k</td><td>Py</td><td>~58%</td><td>63</td><td>moved out of the microsoft org</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/microsoft/markitdown/issues/2468">markitdown #2468</a> RSS/Atom urljoin collapses repeated slashes (filed by the maintainer)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/microsoft/markitdown/issues/2114">markitdown #2114</a> _merge_partial_numbering_lines merges wrongly (has repro)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/microsoft/markitdown/issues/2382">markitdown #2382</a> OCR text matched to DOCX images by position not identity</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/microsoft/markitdown/issues/1784">markitdown #1784</a> one-byte output with no warning</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/microsoft/markitdown/issues/2336">markitdown #2336</a> Arabic / RTL PDF reading order</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/microsoft/agent-framework/issues/8407">agent-framework #8407</a> hosted-agent runtime never activates OTLP export</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/microsoft/agent-framework/issues/6808">agent-framework #6808</a> automatic chat-history compaction for durable backend</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/microsoft/agent-framework/issues/8522">agent-framework #8522</a> stateless workflows with caller-owned checkpoints (maintainer-filed, design first)</li>
+</ul>
+</details>
+
+<details>
+<summary>Mistral AI <span class="sub">only mistral-common is a code target</span></summary>
+<p>mistral-vibe: "not currently accepting contributions" (36 external PRs closed unmerged). client-python/ts are Speakeasy-generated. platform-docs-public has typo PRs open since 2024. <a href="https://github.com/mistralai/mistral-common">mistral-common</a>: issue-first, agent-written PRs OK if they follow AGENTS.md, "sloppy PRs closed without notice." 17/71 external, median 2 days, merger juliendenize.</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/mistralai/mistral-common/issues/324">mistral-common #324</a> experimental OpenAI endpoint rejects assistant tool calls with null content (someone asked to take it same day; coordinate)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/mistralai/mistral-common/issues/148">mistral-common #148</a> MistralCommonTokenizer not supported by trl SFT (maintainer gave direction)</li>
+<li><span class="tag LOW">LOW</span>self-sourced docs / test fixes (a typo PR merged in 3 days on 2026-09-08)</li>
+</ul>
+</details>
+
+<details>
+<summary>Hugging Face <span class="sub">no CLA · peft and huggingface_hub best · trl nearly closed</span></summary>
+<p>transformers and accelerate have a "Code agent slop" label. peft maintainers close drive-by PRs in favour of the reporter's, so claim on the issue first. datasets: comment <code>#self-assign</code>. trl 4/62 external. smolagents dormant. TGI archived.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/huggingface/peft">huggingface/peft</a></td><td>21.7k</td><td>Py</td><td>34/52, 6 days</td><td>38</td><td>BenjaminBossan triages every issue</td></tr>
+<tr><td><a href="https://github.com/huggingface/huggingface_hub">huggingface/huggingface_hub</a></td><td>3.9k</td><td>Py</td><td>20/64, 1 day</td><td>43</td><td>Wauplin</td></tr>
+<tr><td><a href="https://github.com/huggingface/datasets">huggingface/datasets</a></td><td>22k</td><td>Py</td><td>54/73, 5 days</td><td>456</td><td>fresh issues taken in under 24h</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/huggingface/peft/issues/3731">peft #3731</a> CI workflows needing secrets fail on fork sync</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/huggingface/peft/issues/3723">peft #3723</a> set_adapter raises opaque TypeError unhashable list</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/huggingface/peft/issues/3761">peft #3761</a> add_weighted_adapter silently wrong for rslora / lora_bias / DoRA</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/huggingface/peft/issues/3742">peft #3742</a> PiSSA / MiCA / CorDA init bypasses quantized-layer guard</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/huggingface/huggingface_hub/issues/4777">hub #4777</a> hf cache xet clear / prune commands (maintainer open to it)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/huggingface/huggingface_hub/issues/1756">hub #1756</a> lightweight scan-cache (filed by Wauplin)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/huggingface/huggingface_hub/issues/2741">hub #2741</a> pagination in list_models()</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/huggingface/datasets/issues/5380">datasets #5380</a> improve .skip() speed in streaming (good second issue)</li>
+</ul>
+</details>
+
+<details>
+<summary>vLLM and SGLang <span class="sub">lab-adjacent infra every lab hires from · AIBrix in Go is the sweet spot</span></summary>
+<p>vLLM requires DCO sign-off (<code>git commit -s</code>), bracketed PR titles, RFC for large changes, <code>Co-authored-by</code> for AI assistance, maintainer <code>/ci run</code>. SGLang: no CLA/DCO found; maintainer must add <code>run-ci</code>; strict style rules in <code>.claude/rules/*</code>.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/vllm-project/aibrix">vllm-project/aibrix</a></td><td>5.1k</td><td>Go</td><td>54/89, 1 day</td><td>45</td><td>k8s control plane; best Go fit</td></tr>
+<tr><td><a href="https://github.com/vllm-project/vllm-omni">vllm-project/vllm-omni</a></td><td>6.9k</td><td>Py</td><td>66/82, 3 days</td><td>1,183</td><td>gfi 74, help-wanted 154</td></tr>
+<tr><td><a href="https://github.com/vllm-project/vllm">vllm-project/vllm</a></td><td>92k</td><td>Py</td><td>37/51, 7 days</td><td>5,661</td><td>prestige; fresh bugs only</td></tr>
+<tr><td><a href="https://github.com/sgl-project/sglang">sgl-project/sglang</a></td><td>36k</td><td>Py/Rust</td><td>49/76, 1 day</td><td>4,528</td><td>Rust gateway niche</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/vllm-project/aibrix/issues/1047">aibrix #1047</a> optimize kv cache image size (help wanted)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/vllm-project/aibrix/issues/2747">aibrix #2747</a> allow disabling all gateway rate limiting while Redis configured</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/vllm-project/aibrix/issues/2020">aibrix #2020</a> otlp_traces_endpoint for trtllm</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/vllm-project/aibrix/issues/2286">aibrix #2286</a> map gateway SLO tiers to vLLM request priority</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/vllm-project/vllm/issues/57423">vllm #57423</a> FlashInfer autotune cache hits only on rank 0, deadlock</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/vllm-project/vllm/issues/57267">vllm #57267</a> hybrid Mamba2 + prefix caching determinism</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/sgl-project/sglang/issues/39843">sglang #39843</a> Python and Rust render different prompts for identical POST</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/sgl-project/sglang/issues/40083">sglang #40083</a> json_schema accepts uniqueItems / multipleOf but does not enforce</li>
+</ul>
+</details>
+
+<details>
+<summary>NVIDIA <span class="sub">DCO everywhere · dynamo and NeMo Agent Toolkit merge in 2 days</span></summary>
+<p>dynamo needs GPG/SSH-verified commits for auto-CI. Go repos want an issue before significant changes. TensorRT-LLM is effectively internal (6/77). NeMo core moved to the NVIDIA-NeMo org.</p>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/ai-dynamo/dynamo">ai-dynamo/dynamo</a></td><td>8.1k</td><td>Rust/Py/Go</td><td>~55% adj., 2 days</td><td>1,100</td><td>8 GFIs; agent contributors compete</td></tr>
+<tr><td><a href="https://github.com/NVIDIA/NeMo-Agent-Toolkit">NVIDIA/NeMo-Agent-Toolkit</a></td><td>2.6k</td><td>Py</td><td>26/30 genuine, 2 days</td><td>20</td><td>tiny backlog</td></tr>
+<tr><td><a href="https://github.com/NVIDIA/gpu-operator">NVIDIA/gpu-operator</a></td><td>2.9k</td><td>Go</td><td>~80% adj., 3 days</td><td>39</td><td><a href="https://github.com/NVIDIA/k8s-device-plugin">k8s-device-plugin</a> near-equal (1 day)</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/ai-dynamo/dynamo/issues/13497">dynamo #13497</a> surface examples / templates in Recipes tab (good first issue)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/ai-dynamo/dynamo/issues/13211">dynamo #13211</a> deduplicate compatibility feature docs (good first issue)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/ai-dynamo/dynamo/issues/15000">dynamo #15000</a> non-streaming requests on SGLang /generate</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/ai-dynamo/dynamo/issues/14907">dynamo #14907</a> typed modality contract for vLLM-Omni OutputFormatter</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/NVIDIA/NeMo-Agent-Toolkit/issues/1817">NAT #1817</a> validate Vanna query before executing</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/NVIDIA/gpu-operator/issues/1460">gpu-operator #1460</a> option to skip specific validators (help wanted; prior PR closed)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/NVIDIA/gpu-operator/issues/2080">gpu-operator #2080</a> operator-level policy requiring explicit GPU requests</li>
+</ul>
+<p class="kbd">Avoid: TensorRT-LLM, NeMo Guardrails / Skills (2/55, 2/50), Megatron-LM (946 open PRs), Model-Optimizer.</p>
+</details>
+
+<details>
+<summary>Ai2, EleutherAI, Cohere <span class="sub">open-instruct, delphi fast · Cohere mostly generated</span></summary>
+<table>
+<tr><th>Repo</th><th>Stars</th><th>Lang</th><th>Ext share</th><th>Open PRs</th><th>Notes</th></tr>
+<tr><td><a href="https://github.com/allenai/open-instruct">allenai/open-instruct</a></td><td>3.9k</td><td>Py</td><td>22/50, 4 days</td><td>81</td><td><code>PR welcome!</code> label; no CLA</td></tr>
+<tr><td><a href="https://github.com/allenai/OLMo-core">allenai/OLMo-core</a></td><td>1.5k</td><td>Py</td><td>few true externals, 1 day</td><td>86</td><td>issue-first + CHANGELOG</td></tr>
+<tr><td><a href="https://github.com/EleutherAI/delphi">EleutherAI/delphi</a></td><td>275</td><td>Py</td><td>40/72, 1 day</td><td>6</td><td>CLA; interpretability</td></tr>
+<tr><td><a href="https://github.com/EleutherAI/lm-evaluation-harness">EleutherAI/lm-evaluation-harness</a></td><td>14k</td><td>Py</td><td>60/70, 14 days</td><td>401</td><td>self-source bugs in task YAML / aggregation</td></tr>
+<tr><td><a href="https://github.com/cohere-ai/cohere-compass-sdk">cohere-ai/cohere-compass-sdk</a></td><td>13</td><td>Py</td><td>staff-dominated</td><td>4</td><td>only live Cohere repo</td></tr>
+</table>
+<ul class="issue">
+<li><span class="tag LOW">LOW</span><a href="https://github.com/allenai/open-instruct/issues/1899">open-instruct #1899</a> chat_template.jinja mismatch with training template</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/allenai/open-instruct/issues/1803">open-instruct #1803</a> wandb charts missing for Olmo3 7B RL</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/allenai/OLMo-core/issues/849">OLMo-core #849</a> Molmo2 tokenizer chat template rejects system turns (maintainer-filed)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/allenai/OLMo-core/issues/854">OLMo-core #854</a> DionConfig incorrectly scales LM-head LR</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/EleutherAI/delphi/issues/38">delphi #38</a> save cached latents as caching progresses (maintainer-filed)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/EleutherAI/delphi/issues/35">delphi #35</a> SAE Lens support</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/EleutherAI/lm-evaluation-harness/issues/2758">lm-eval #2758</a> HF batch_size=auto unreliable</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/EleutherAI/gpt-neox/issues/962">gpt-neox #962</a> bias multi-added with gpt_j_residual under model parallel (good first issue)</li>
+</ul>
+</details>
+
+<details>
+<summary>DeepSeek, Qwen, Unsloth, Sakana, Perplexity, Zhipu, Moonshot <span class="sub">DeepSeek infra repos merge fast if you have H100s</span></summary>
+<p><strong>DeepSeek:</strong> model repos are dumps, but <a href="https://github.com/deepseek-ai/DeepGEMM">DeepGEMM</a>, <a href="https://github.com/deepseek-ai/FlashMLA">FlashMLA</a>, <a href="https://github.com/deepseek-ai/DeepEP">DeepEP</a>, <a href="https://github.com/deepseek-ai/3FS">3FS</a> merge outsiders in 1–4 days with zero process; needs Hopper / Blackwell access. <strong>Qwen:</strong> <a href="https://github.com/QwenLM/qwen-code">qwen-code</a> requires every PR to link an issue; autofix bots take bugs within hours. <strong>Unsloth:</strong> <a href="https://github.com/unslothai/unsloth-zoo">unsloth-zoo</a> (21/84, 4 days) beats the crowded main repo. <strong>Sakana:</strong> only <a href="https://github.com/SakanaAI/ShinkaEvolve">ShinkaEvolve</a> merges outsiders; 0 open issues, file one first. <strong>Perplexity:</strong> <a href="https://github.com/perplexityai/modelcontextprotocol">modelcontextprotocol</a> and api-cookbook merge; Go/Rust infra does not. <strong>Zhipu:</strong> <a href="https://github.com/THUDM/slime">slime</a> bug fixes and RL perf only. <strong>Moonshot:</strong> <a href="https://github.com/MoonshotAI/checkpoint-engine">checkpoint-engine</a> (33/62, 4 days).</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/unslothai/unsloth-zoo/issues/1251">unsloth-zoo #1251</a> MXFP4 gpt-oss dead dequantize import / inert env flag (filed by danielhanchen)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/unslothai/unsloth-zoo/issues/668">unsloth-zoo #668</a> RS-LoRA gradient explosion at block_size=384</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/unslothai/unsloth/issues/3951">unsloth #3951</a> Qwen3-TTS fine-tuning support (gfi + help wanted)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/QwenLM/qwen-code/issues/12165">qwen-code #12165</a> MCP OAuth drops registrationUrl from WWW-Authenticate</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/QwenLM/qwen-code/issues/12113">qwen-code #12113</a> ACP reports end_turn after finish_reason=length</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/QwenLM/qwen-code/issues/12002">qwen-code #12002</a> redact inline secrets in recorded tool-call args (P1, maintainer-filed, ready-for-human)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/QwenLM/qwen-code/issues/12014">qwen-code #12014</a> misleading --system-prompt docs</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/QwenLM/Qwen-MM-Plugins/issues/35">Qwen-MM-Plugins #35</a> images still sent to non-vision model</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/deepseek-ai/DeepGEMM/issues/449">DeepGEMM #449</a> non-deterministic tf32_hc_prenorm_gemm on SM90 (needs H100)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/deepseek-ai/FlashMLA/issues/204">FlashMLA #204</a> add FP8 KV-cache case to dense decode tests</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/MoonshotAI/checkpoint-engine/issues/93">checkpoint-engine #93</a> validate HcclCommConfig size</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/perplexityai/modelcontextprotocol/issues/143">perplexity mcp #143</a> AG2 docs use pre-1.0 imports</li>
+</ul>
+</details>
+
+<details>
+<summary>Coding-agent projects: OpenHands, Goose, Aider, Cline, Continue, SWE-agent <span class="sub">OpenHands and Goose are live</span></summary>
+<p><strong><a href="https://github.com/All-Hands-AI/OpenHands">OpenHands</a></strong> (88.4k, Py/TS): merges daily, ~79/100 external, staff and outsiders both merged within a day. Issues carry <code>priority:*</code> and <code>ready-for-dev</code> ("Scoped for contribution") with acceptance criteria and code locations. Every ready-for-dev bug filed 09-16 to 09-18 already had a same-day PR; first PR wins. Root CONTRIBUTING.md location and CLA/DCO not verified.</p>
+<p><strong><a href="https://github.com/aaif-goose/goose">Goose</a></strong> (now aaif-goose, Rust + TS): 15/46 genuine external, 0–9 days, but strict <a href="https://github.com/orgs/aaif-goose/projects/1">board</a>: "Do not begin implementation or open a PR until the issue has reached Ready"; "vibe coded" PRs closed.</p>
+<p><strong>Aider:</strong> 10 merges in 2026 vs 123 in 2025; CLA; frozen. <strong>Cline:</strong> issue-first with approval, ~95% staff merges, 575 open PRs. <strong>Continue:</strong> dormant since 2026-07-21. <strong><a href="https://github.com/SWE-agent/SWE-agent">SWE-agent</a>:</strong> accepts externals but ~15 merges in 3 months, none since July.</p>
+<ul class="issue">
+<li><span class="tag MED">MED</span><a href="https://github.com/All-Hands-AI/OpenHands/issues/17498">OpenHands #17498</a> expose AgentProfile system_message_suffix as "Custom instructions" (ready-for-dev, no PR, frontend only)</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/All-Hands-AI/OpenHands/issues/17505">OpenHands #17505</a> scoped API keys for Agent Server: admin / write / read (design first)</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/All-Hands-AI/OpenHands/issues/17512">OpenHands #17512</a> OCI Generative AI as first-class LLM provider (linked-PR status unverified)</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/All-Hands-AI/OpenHands/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee+label%3Aready-for-dev+sort%3Acreated-desc">OpenHands ready-for-dev stream</a>: watch twice a day; priority:low frontend bugs are precisely scoped</li>
+<li><span class="tag LOW">LOW</span><a href="https://github.com/aaif-goose/goose/issues/12211">goose #12211</a> stale provider docs paths</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/aaif-goose/goose/issues/12212">goose #12212</a> Responses-stream decode error missing field created_at</li>
+<li><span class="tag MED">MED</span><a href="https://github.com/aaif-goose/goose/issues/12174">goose #12174</a> declarative provider for OpenAI-compatible gateways</li>
+<li><span class="tag HIGH">HIGH</span><a href="https://github.com/aaif-goose/goose/issues/11926">goose #11926</a> collapse tool calls per turn into compact summary</li>
+</ul>
+</details>
+
+<!-- ================= PORTFOLIO ================= -->
+<h2 id="portfolio">3. Your six-PR portfolio</h2>
+<p>Chosen for lab brand value, your Go / Python / TS strengths, measured merge speed, and issues that were free at research time. Each has a fallback in the same repo.</p>
+<div class="card" style="padding:0 8px">
+<table>
+<tr><th>#</th><th>Level</th><th>Lab / repo</th><th>Issue</th><th>Why</th><th>Fallback</th></tr>
+<tr><td>1</td><td><span class="tag LOW">LOW</span></td><td>NVIDIA · <a href="https://github.com/ai-dynamo/dynamo">dynamo</a></td><td><a href="https://github.com/ai-dynamo/dynamo/issues/13497">#13497</a> Recipes tab docs</td><td>Labelled, unassigned, 2-day merges; gets you through DCO + signed-commit setup</td><td><a href="https://github.com/ai-dynamo/dynamo/issues/13211">#13211</a></td></tr>
+<tr><td>2</td><td><span class="tag LOW">LOW</span></td><td>Meta · <a href="https://github.com/pytorch/torchtitan">torchtitan</a></td><td><a href="https://github.com/pytorch/torchtitan/issues/2899">#2899</a> document TorchFT timeouts</td><td>Gets Meta CLA signed; 1-day merges; maintainers already discussed it</td><td><a href="https://github.com/meta-pytorch/torchft/issues/295">torchft #295</a></td></tr>
+<tr><td>3</td><td><span class="tag MED">MED</span></td><td>Anthropic · <a href="https://github.com/modelcontextprotocol/go-sdk">MCP go-sdk</a></td><td><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1235">#1235</a> response after cancel</td><td>Go, Anthropic-founded org, 1–3 day merges, 31 distinct external authors recently</td><td><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1250">#1250</a>, <a href="https://github.com/modelcontextprotocol/go-sdk/issues/1188">#1188</a></td></tr>
+<tr><td>4</td><td><span class="tag MED">MED</span></td><td>OpenAI · <a href="https://github.com/openai/openai-agents-python">openai-agents-python</a></td><td><a href="https://github.com/openai/openai-agents-python/issues/4864">#4864</a> compaction session bug</td><td>Python, no CLA, 1-day median, seratch merges externals</td><td><a href="https://github.com/openai/codex-security/issues/251">codex-security #251</a></td></tr>
+<tr><td>5</td><td><span class="tag HIGH">HIGH</span></td><td>Google · <a href="https://github.com/google/adk-go">adk-go</a></td><td><a href="https://github.com/google/adk-go/issues/1126">#1126</a> MCP tool-name prefixing</td><td>Go, enhancement with no PR, 75 days old, design already settled in adk-python</td><td><a href="https://github.com/google/adk-go/issues/699">#699</a></td></tr>
+<tr><td>6</td><td><span class="tag HIGH">HIGH</span></td><td>Anthropic · <a href="https://github.com/anthropics/claude-agent-sdk-python">claude-agent-sdk-python</a></td><td><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/425">#425</a> MCP tools under background subagents</td><td>Directly on Anthropic's own repo; real concurrency bug visible to the Claude Code team</td><td><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/434">#434</a></td></tr>
+</table>
+</div>
+<p><strong>Second wave</strong> once these land: <a href="https://github.com/microsoft/markitdown/issues/2468">markitdown #2468</a>, <a href="https://github.com/huggingface/peft/issues/3761">peft #3761</a>, <a href="https://github.com/vllm-project/aibrix/issues/2747">aibrix #2747</a>, <a href="https://github.com/PrimeIntellect-ai/prime-rl/issues/3566">prime-rl #3566</a>, <a href="https://github.com/QwenLM/qwen-code/issues/12002">qwen-code #12002</a>, <a href="https://github.com/All-Hands-AI/OpenHands/issues/17498">OpenHands #17498</a>, <a href="https://github.com/NousResearch/hermes-agent/issues/94859">hermes-agent #94859</a>.</p>
+
+<!-- ================= MERGE ODDS ================= -->
+<h2 id="merge">4. How to maximize merge probability</h2>
+<div class="grid">
+<div class="card">
+<h3 style="margin-top:0">Before writing code</h3>
+<ol class="steps">
+<li><strong>Read</strong> CONTRIBUTING.md, AGENTS.md / CLAUDE.md, the PR template, and <code>.github/workflows</code> for CLA/DCO bots. Your osv-scanner PRs died on this alone.</li>
+<li><strong>Check for generated code:</strong> <code>grep -rl "DO NOT EDIT\|stainless\|fern\|speakeasy"</code>, <code>.stats.yml</code>, <code>.castiron-ratchet.json</code>. playwright-python #3085 died here.</li>
+<li><strong>Check the issue timeline</strong> for cross-referenced PRs and the open PR list for the same title. If one exists, review it or move on.</li>
+<li><strong>Comment a one-paragraph plan</strong> and wait for a maintainer nod on anything that changes behaviour. Respect hard gates (goose Ready, python-sdk assignment, gemini-cli approval, cline approval).</li>
+<li><strong>Sign the CLA</strong> (Google, Meta, Microsoft, EleutherAI) or set up DCO + SSH signing (vLLM, NVIDIA, dynamo) before the first push so the bot check is green.</li>
+</ol>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Writing the PR</h3>
+<ol class="steps" start="6">
+<li><strong>One PR per repo at a time.</strong> Never batch three into a new repo the same day.</li>
+<li><strong>Keep it small.</strong> Your merged PRs were +4 to +149 lines; sampled external merges in agents-js were 1–5 files.</li>
+<li><strong>Run the real test suite locally</strong> and paste the command and result in the PR body. playwright #40994 was closed because it was never run.</li>
+<li><strong>Add a regression test</strong> in the same PR.</li>
+<li><strong>Follow conventions exactly:</strong> conventional commits, bracketed titles (vLLM), changesets (agents-js), CHANGELOG (OLMo-core), Go style + commit format (go-sdk).</li>
+<li><strong>Disclose AI assistance</strong> where required (MCP org, vLLM Co-authored-by) and make sure the code reads as hand-verified.</li>
+<li><strong>Link the issue</strong> with <code>Fixes #N</code> and describe verification steps, not just the diff.</li>
+</ol>
+</div>
+<div class="card">
+<h3 style="margin-top:0">After opening</h3>
+<ol class="steps" start="13">
+<li><strong>Fix red CI within hours.</strong> playwright-python #3099 was superseded while waiting.</li>
+<li><strong>Respond to reviews the same day</strong> and keep the branch rebased.</li>
+<li><strong>Nudge once</strong> after the repo's median merge time passes, tagging whoever merged the last three external PRs. Never twice.</li>
+<li><strong>Do not open a competing PR</strong> on an issue that already has one. Review the existing PR instead; that also builds a footprint.</li>
+</ol>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Portfolio level</h3>
+<ol class="steps" start="17">
+<li><strong>Prefer maintainer-filed issues</strong> (markitdown #2468, unsloth-zoo #1251, OLMo-core #849, qwen-code #12002, delphi #38, hub #1756). The person who wants the fix is the person who merges.</li>
+<li><strong>Self-source bugs:</strong> run the SDK against edge cases, file a precise issue with a repro, open the fix within the hour. This is the dominant merged pattern at OpenAI, Anthropic, Google, Microsoft, NVIDIA and OpenHands.</li>
+<li><strong>Watch issue feeds</strong> twice a day: <code>gh issue list --repo X --search "sort:created-desc no:assignee"</code>. Unassigned bugs get PRs within 1–3 days.</li>
+<li><strong>Keep a "Merged upstream" list</strong> in your profile README, linking each PR, grouped by lab. That is the artefact a recruiter opens.</li>
+</ol>
+</div>
+</div>
+
+<!-- ================= ORDER OF ATTACK ================= -->
+<h2 id="attack">5. Practical order of attack</h2>
+<div class="card">
+<h3 style="margin-top:0">Week 0 · setup, one evening</h3>
+<ul>
+<li>Sign Google, Meta, Microsoft and EleutherAI CLAs. Configure <code>git commit -s</code> and SSH commit signing. Set up <code>gh</code> watch aliases for the six target repos.</li>
+<li>Re-verify each of the six issues is still unassigned with no linked PR. Post your claim comment on all six the same evening.</li>
+</ul>
+<h3>Week 1 · the two LOW PRs</h3>
+<ul>
+<li><a href="https://github.com/ai-dynamo/dynamo/issues/13497">dynamo #13497</a> and <a href="https://github.com/pytorch/torchtitan/issues/2899">torchtitan #2899</a>. Goal: two green merges inside 7 days, both CLA/DCO paths exercised.</li>
+<li>Nudge <a href="https://github.com/grafana/k6/pull/6072">k6 #6072</a> for its second review.</li>
+</ul>
+<h3>Weeks 2–3 · the two MEDIUM PRs</h3>
+<ul>
+<li><a href="https://github.com/modelcontextprotocol/go-sdk/issues/1235">MCP go-sdk #1235</a> first: wait for a maintainer ack, then PR within 24h.</li>
+<li><a href="https://github.com/openai/openai-agents-python/issues/4864">openai-agents-python #4864</a> second: read AGENTS.md, run <code>make sync</code> and the tests.</li>
+</ul>
+<h3>Weeks 3–6 · the two HIGH PRs</h3>
+<ul>
+<li><a href="https://github.com/google/adk-go/issues/1126">adk-go #1126</a>: post a design comment referencing the adk-python implementation, wait for a reply, then implement with tests. Expect a 1–2 week review cycle.</li>
+<li><a href="https://github.com/anthropics/claude-agent-sdk-python/issues/425">claude-agent-sdk-python #425</a>: reproduce first, post the repro on the issue, then fix. This is the PR you want visible when applying to Anthropic.</li>
+</ul>
+<h3>Weeks 6–10 · second wave</h3>
+<ul>
+<li>Pick three from markitdown #2468, peft #3761, aibrix #2747, prime-rl #3566, qwen-code #12002, OpenHands #17498, hermes-agent #94859. Add one review of someone else's PR in go-sdk or agents-python per week.</li>
+</ul>
+<h3>Ongoing</h3>
+<ul>
+<li>Every two weeks re-run the shortlist: fresh unassigned bugs in the top-10 repos, filed and fixed same day.</li>
+<li>Update the profile README "Merged upstream" list after each merge.</li>
+</ul>
+</div>
+
+<!-- ================= AVOID ================= -->
+<h2 id="avoid">6. Avoid list</h2>
+<div class="card">
+<ul>
+<li><strong>OpenAI:</strong> codex, all Stainless SDKs, whisper / tiktoken / evals / gpt-oss queues, openai-cookbook.</li>
+<li><strong>xAI:</strong> everything.</li>
+<li><strong>Anthropic / MCP:</strong> anthropic-sdk-*, claude-code, claude-agent-sdk-typescript, skills, inspector, python-sdk (unless assigned), registry seed.json.</li>
+<li><strong>Google:</strong> googleapis/*-genai, genai-processors, langextract, gemini-cli, jax / flax first PRs.</li>
+<li><strong>Cognition / Cursor / others:</strong> devin-cli, codeium, blockdiff, windsurf.vim, cursor/cursor, anysphere/*, Reflection, Magic, Poolside, Nous atropos / autonovel.</li>
+<li><strong>Mistral:</strong> mistral-vibe, client-*, platform-docs PRs. <strong>HF:</strong> trl, smolagents, TGI.</li>
+<li><strong>Meta:</strong> torchtune, monarch, botorch, llama-api-python, pytorch/pytorch first PR. <strong>Microsoft:</strong> autogen, semantic-kernel, graphrag, magentic-ui, qlib.</li>
+<li><strong>NVIDIA:</strong> TensorRT-LLM, NeMo Guardrails / Skills, Megatron-LM. <strong>Prime / Together:</strong> prime-agent, community-environments, agentica-project, together-py/ts.</li>
+<li><strong>Coding agents:</strong> Aider, Continue, Cline without approval. <strong>Others:</strong> DeepSeek model repos, Qwen3 model repos, unsloth notebooks, Sakana AI-Scientist, Perplexity Go / Rust infra.</li>
+</ul>
+</div>
+
+<footer>
+<p><strong>Caveats.</strong> Numbers are point-in-time from 2026-09-18 and issues in these repos attract PRs within hours; re-check before claiming. External share over-counts where staff hide org membership; corrected figures are shown where identifiable. Not verified because the GitHub API quota ran out: OpenHands contributing-file location and CLA/DCO, OpenHands #17512 linked-PR status, SWE-bench. Full markdown version: <code>oss-ai-labs-plan.md</code> in the same folder.</p>
+</footer>
+</main>
+
+<script>
+(function(){
+  try{
+    var root=document.documentElement, btn=document.getElementById('themeBtn');
+    var saved=null; try{saved=localStorage.getItem('theme');}catch(e){}
+    var prefersDark=false; try{prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;}catch(e){}
+    function apply(t){root.setAttribute('data-theme',t);if(btn)btn.textContent=t==='dark'?'☀️ Light':'🌙 Dark';}
+    apply(saved||(prefersDark?'dark':'light'));
+    if(btn)btn.addEventListener('click',function(){var t=root.getAttribute('data-theme')==='dark'?'light':'dark';try{localStorage.setItem('theme',t);}catch(e){}apply(t);});
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
